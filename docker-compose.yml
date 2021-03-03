@@ -1,0 +1,48 @@
+version: "3.3"
+
+services:
+  api:
+    container_name: api
+    image: node:12
+    command: yarn dev
+    working_dir: /app
+    networks: 
+      - base
+    ports:
+      - 3000:8000
+    volumes:
+      - ./pokedex-api/:/app
+    env_file :
+      - ./pokedex-api/.env
+    depends_on: 
+      - db
+
+  front:
+    container_name: front
+    image: node:12
+    command: npm start
+    working_dir: /app
+    ports:
+      - 80:3000
+    env_file : 
+      - ./pokedex-app/.env
+    volumes:
+      - ./pokedex-app/:/app
+
+  db :
+    container_name: db
+    image : mariadb:10
+    networks :
+      - base
+    ports :
+      - "3306:3306"
+    env_file : 
+      - ./pokedex-api/.env
+    volumes:
+      - ./pokedex-db/pokedex.sql:/docker-entrypoint-initdb.d/sample.sql
+
+networks: 
+  base:
+
+volumes:
+  db:
